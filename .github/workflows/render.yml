@@ -65,7 +65,7 @@ jobs:
           ARGS="--ratios ${{ matrix.ratio }} --tiers $TIERS"
           if [ -n "$TEST" ]; then ARGS="$ARGS --test $TEST"; fi
           if [ -n "$WORKERS" ]; then ARGS="$ARGS --workers $WORKERS"; fi
-          node render.js $ARGS
+          node index.html $ARGS
           ls -lh *.mp4
       - name: Upload videos
         uses: actions/upload-artifact@v4
