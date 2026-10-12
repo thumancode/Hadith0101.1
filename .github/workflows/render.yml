@@ -1,1 +1,111 @@
-
+name: Render video (all ratios) and publish Release
+on:
+  workflow_dispatch:
+    inputs:
+      ratios:
+        description: "Ratios"
+        required: false
+        default: "9x16,16x9,1x1,4x5,3x4,4x3"
+      tiers:
+        description: "Qualities"
+        required: false
+        default: "4k,fhd,hd"
+      test_seconds:
+        required: false
+        default: ""
+      workers:
+        required: false
+        default: ""
+      release_tag:
+        required: false
+        default: ""
+      release_title:
+        required: false
+        default: ""
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - id: m
+        run: |
+          RATIOS="${{ github.event.inputs.ratios }}"
+          RATIOS="${RATIOS:-9x16,16x9,1x1,4x5,3x4,4x3}"
+          JSON=$(echo "$RATIOS" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | jq -R -s -c 'split("\n") | map(select(length>0))')
+          echo "matrix=$JSON" >> $GITHUB_OUTPUT
+  render:
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ratio: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install FFmpeg and fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-core fonts-hosny-amiri fonts-freefont-ttf fonts-dejavu-core
+      - name: Install deps
+        run: |
+          npm install playwright
+          npx playwright install --with-deps chromium
+      - name: Render ratio ${{ matrix.ratio }}
+        run: |
+          TIERS="${{ github.event.inputs.tiers }}"
+          TIERS="${TIERS:-4k,fhd,hd}"
+          TEST="${{ github.event.inputs.test_seconds }}"
+          WORKERS="${{ github.event.inputs.workers }}"
+          ARGS="--ratios ${{ matrix.ratio }} --tiers $TIERS"
+          if [ -n "$TEST" ]; then ARGS="$ARGS --test $TEST"; fi
+          if [ -n "$WORKERS" ]; then ARGS="$ARGS --workers $WORKERS"; fi
+          node render.js $ARGS
+          ls -lh *.mp4
+      - name: Upload videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-${{ matrix.ratio }}
+          path: "*.mp4"
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+  release:
+    needs: render
+    if: ${{ github.event.inputs.test_seconds == '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: video-*
+          merge-multiple: true
+          path: out
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_INPUT: ${{ github.event.inputs.release_tag }}
+          TITLE_INPUT: ${{ github.event.inputs.release_title }}
+        run: |
+          TAG="${TAG_INPUT:-video-${{ github.run_number }}}"
+          TITLE="${TITLE_INPUT:-Video in all ratios and qualities (run ${{ github.run_number }})}"
+          cd out
+          ls -lh
+          {
+            echo "Rendered by GitHub Actions run ${{ github.run_number }}."
+            echo
+            echo "| File | Size |"
+            echo "|---|---|"
+            for f in *.mp4; do echo "| $f | $(du -h "$f" | cut -f1) |"; done
+          } > ../notes.md
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" *.mp4 --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" *.mp4 --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$TITLE" --notes-file ../notes.md
+          fi
