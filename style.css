@@ -1,0 +1,171 @@
+/* PROFESSIONAL ISLAMIC DESIGN - NO ERROR, PRODUCTION GRADE */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:#020e0b; }
+:root{
+  --emerald-950:#02120e;
+  --emerald-900:#04201b;
+  --emerald-800:#0b3d33;
+  --emerald-700:#145c4b;
+  --emerald-600:#1e7a64;
+  --gold-300:#f8e7ae;
+  --gold-400:#e3c26b;
+  --gold-600:#c9a24a;
+  --gold-700:#a67c28;
+  --cream:#fff6dc;
+  --cream-dim:#e8ddb8;
+}
+
+#root{
+  position:relative; width:1080px; height:1920px; overflow:hidden;
+  background: radial-gradient(120% 80% at 50% -10%, #173d34 0%, var(--emerald-900) 45%, #020e0b 100%);
+  font-family:'Noto Serif Bengali','Noto Sans Bengali','Hind Siliguri','FreeSerif',serif;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+
+/* BACKGROUND LAYERS */
+.bg-gradient{
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(900px 600px at 15% 15%, rgba(227,194,107,0.12) 0%, transparent 60%),
+    radial-gradient(800px 600px at 85% 85%, rgba(30,122,100,0.28) 0%, transparent 60%),
+    linear-gradient(180deg, #0a332a 0%, #04201b 55%, #020e0b 100%);
+}
+.bg-pattern{
+  position:absolute; inset:-10%; z-index:1; opacity:0.18;
+}
+.bg-vignette{
+  position:absolute; inset:0; z-index:3;
+  background: radial-gradient(110% 85% at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 100%);
+  pointer-events:none;
+}
+.bg-glow{
+  position:absolute; width:720px; height:720px; left:50%; top:42%; transform:translate(-50%,-50%);
+  z-index:2; border-radius:50%; filter:blur(60px); opacity:0.18; pointer-events:none;
+  background: radial-gradient(circle, var(--gold-400) 0%, transparent 70%);
+  transition: background 0.6s ease, opacity 0.6s ease;
+}
+.gold-hairline{
+  position:absolute; left:0; width:100%; height:1px; z-index:10;
+  background: linear-gradient(90deg, transparent, rgba(227,194,107,0.7), transparent);
+}
+.gold-hairline.top{ top:0; }
+.gold-hairline.bottom{ bottom:6px; }
+
+/* PARTICLES */
+.particle{
+  position:absolute; z-index:2; border-radius:50%; background:var(--gold-300);
+  box-shadow:0 0 10px rgba(248,231,174,0.8);
+  pointer-events:none;
+}
+
+/* MOSQUE SILHOUETTE BOTTOM */
+.mosque-skyline{
+  position:absolute; bottom:0; left:0; width:100%; height:18%; z-index:4; opacity:0.28; pointer-events:none;
+}
+
+/* BRAND BAR */
+.brand-bar{
+  position:absolute; z-index:20; display:flex; align-items:center; gap:14px;
+  background: rgba(255,246,220,0.06); border:1px solid rgba(227,194,107,0.18);
+  backdrop-filter: blur(12px); border-radius:999px; padding:10px 20px 10px 12px;
+}
+.brand-bar .brand-icon-wrap{
+  width:56px; height:56px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  background:#fff; border:2px solid rgba(227,194,107,0.5); box-shadow:0 2px 10px rgba(0,0,0,0.3);
+}
+.brand-bar .brand-icon-wrap img{ width:100%; height:100%; object-fit:cover; transform:scale(1.04); }
+.brand-bar .brand-text{ display:flex; flex-direction:column; line-height:1.1; }
+.brand-bar .brand-title{
+  font-family:'Noto Serif Bengali','Noto Sans Bengali',serif; font-weight:700; font-size:22px; color:var(--cream);
+  letter-spacing:0.2px; white-space:nowrap;
+}
+.brand-bar .brand-sub{ font-size:13px; color:rgba(255,246,220,0.7); letter-spacing:0.8px; text-transform:uppercase; }
+
+/* STAGE */
+.stage{
+  position:absolute; z-index:12; display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.scene{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; visibility:hidden; }
+.scene.active{ opacity:1; visibility:inherit; }
+
+/* CARDS */
+.card{
+  background: linear-gradient(180deg, rgba(255,246,220,0.10) 0%, rgba(255,246,220,0.05) 100%);
+  border:1px solid rgba(227,194,107,0.22); backdrop-filter: blur(18px); border-radius:28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,246,220,0.12);
+  padding:28px 30px; text-align:center;
+}
+.card-gold{ border-color:rgba(227,194,107,0.42); box-shadow:0 0 0 1px rgba(227,194,107,0.15) inset, 0 20px 60px rgba(0,0,0,0.5); }
+.card-arabic{
+  font-family:'Amiri','Noto Naskh Arabic','FreeSerif',serif; direction:rtl; line-height:1.9;
+  color:var(--cream); font-size:54px; font-weight:400;
+}
+.card-bn{ font-family:'Noto Serif Bengali','Noto Sans Bengali',serif; color:var(--cream); line-height:1.55; }
+
+/* APP ICON HERO */
+.icon-hero{
+  position:relative; display:flex; align-items:center; justify-content:center;
+}
+.icon-ring{
+  position:absolute; border:1px solid rgba(227,194,107,0.3); border-radius:50%;
+}
+.icon-hero-inner{
+  position:relative; background:#fff; border-radius:34%; overflow:hidden;
+  border:3px solid rgba(227,194,107,0.9); box-shadow:0 0 0 1px rgba(0,0,0,0.1), 0 18px 50px rgba(0,0,0,0.45), 0 0 40px rgba(227,194,107,0.35);
+}
+.icon-hero-inner img{ width:100%; height:100%; object-fit:cover; transform:scale(1.04); display:block; }
+
+/* TITLE */
+.title-xl{
+  font-family:'Noto Serif Bengali','Noto Sans Bengali',serif; font-weight:800; color:var(--cream);
+  text-align:center; line-height:1.25; letter-spacing:-0.2px;
+  text-shadow:0 2px 20px rgba(0,0,0,0.5);
+}
+.title-gold{ color:var(--gold-400); }
+.tagline{
+  margin-top:14px; font-size:22px; color:rgba(255,246,220,0.75); letter-spacing:0.4px; font-weight:500;
+}
+
+/* SUBTITLE PANEL */
+.subtitle-panel{
+  position:absolute; z-index:25; display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(180deg, rgba(8,28,24,0.92) 0%, rgba(4,18,15,0.96) 100%);
+  border:1.5px solid rgba(227,194,107,0.28); border-radius:22px; backdrop-filter: blur(20px);
+  box-shadow:0 18px 50px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,246,220,0.08);
+  padding:18px 26px; text-align:center;
+}
+.subtitle-text{
+  width:100%; font-family:'Noto Serif Bengali','Noto Sans Bengali',serif; color:var(--cream);
+  text-align:center; line-height:1.45; word-wrap:break-word;
+}
+.subtitle-word{ display:inline-block; opacity:0; transform:translateY(12px); will-change:transform,opacity; white-space:pre-wrap; }
+.subtitle-word.visible{ opacity:1; transform:translateY(0); }
+.subtitle-word.gold{ color:var(--gold-400); font-weight:700; }
+.subtitle-word.emph{ color:var(--gold-300); }
+
+/* PROGRESS */
+.progress-wrap{ position:absolute; z-index:30; background:rgba(255,255,255,0.06); overflow:hidden; }
+.progress-bar{ height:100%; width:0%; background: linear-gradient(90deg, var(--gold-700), var(--gold-400), var(--gold-300)); box-shadow:0 0 12px rgba(227,194,107,0.6); }
+
+/* STORE BADGE */
+.store-badge{ display:flex; align-items:center; justify-content:center; gap:14px; }
+.store-badge img{ height:64px; width:auto; object-fit:contain; filter:drop-shadow(0 4px 16px rgba(0,0,0,0.4)); }
+
+/* ANIM helpers */
+.fade-up{ transform:translateY(20px); opacity:0; }
+.scale-in{ transform:scale(0.92); opacity:0; }
+.glow-text{ text-shadow:0 0 20px rgba(227,194,107,0.5); }
+
+/* SVG art containers */
+.art-wrap{ display:flex; align-items:center; justify-content:center; width:100%; }
+.art-wrap svg{ overflow:visible; }
+
+/* MEANING CHIPS */
+.chip-row{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:18px; }
+.chip{
+  padding:10px 18px; border-radius:999px; background:rgba(227,194,107,0.12); border:1px solid rgba(227,194,107,0.28);
+  color:var(--gold-300); font-size:20px; font-weight:600; letter-spacing:0.3px;
+}
+.chip-arrow{ display:flex; align-items:center; color:rgba(227,194,107,0.5); font-size:22px; }
+
+/* RESPONSIVE FONT ADJUST via JS LAYOUT */
