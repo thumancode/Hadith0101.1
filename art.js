@@ -1,78 +1,273 @@
-// Inline SVG vector art (no external assets). Every function returns an SVG string.
-const GOLD='#e3c26b',GL='#f8e7ae',GD='#a67c28';
-const ARF='font-family="Amiri,Noto Naskh Arabic,FreeSerif,serif"';
-const A={};
-const sv=(w,h,body,vb)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${vb||`0 0 ${w} ${h}`}" style="overflow:visible;display:block">${body}</svg>`;
-A.star=(cx,cy,r,ir)=>{const p=[];for(let i=0;i<16;i++){const a=Math.PI*i/8-Math.PI/2,q=i%2?r*(ir||.72):r;p.push((cx+q*Math.cos(a)).toFixed(1)+','+(cy+q*Math.sin(a)).toFixed(1))}return p.join(' ')};
-A.defs=()=>`<svg width="0" height="0" style="position:absolute"><defs>
-<linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8e7ae"/><stop offset=".5" stop-color="#e3c26b"/><stop offset="1" stop-color="#a67c28"/></linearGradient>
-<radialGradient id="gGreen" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#8be89a"/><stop offset=".5" stop-color="#1f9a50"/><stop offset="1" stop-color="#0a4a2a"/></radialGradient>
-<linearGradient id="gWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6a33"/><stop offset="1" stop-color="#4f2f12"/></linearGradient>
-<linearGradient id="gPage" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff6dc"/><stop offset="1" stop-color="#efd9a0"/></linearGradient>
-<linearGradient id="gRug" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b7a63"/><stop offset="1" stop-color="#0b3d33"/></linearGradient>
-<radialGradient id="gSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c0"/><stop offset="1" stop-color="#f0a92e"/></radialGradient>
-</defs></svg>`;
-A.medallion=s=>sv(s,s,`<g fill="none" stroke="${GOLD}" stroke-width="3">
-<polygon points="${A.star(500,500,480)}"/><g transform="rotate(22.5 500 500)"><polygon points="${A.star(500,500,420)}"/></g>
-<circle cx="500" cy="500" r="330"/><circle cx="500" cy="500" r="300" stroke-dasharray="4 10"/><polygon points="${A.star(500,500,280,.6)}"/>
-<circle cx="500" cy="500" r="150"/><polygon points="${A.star(500,500,130)}"/>
-${[...Array(8)].map((_,i)=>{const a=i*Math.PI/4;return `<polygon points="${A.star(500+395*Math.cos(a),500+395*Math.sin(a),34)}"/>`}).join('')}</g>`,'0 0 1000 1000');
-A.tileURI=()=>{const s=`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><g fill="none" stroke="#e3c26b" stroke-width="1.5"><polygon points="${A.star(60,60,44)}"/><circle cx="60" cy="60" r="20"/><polygon points="${A.star(0,0,22)}"/><polygon points="${A.star(120,0,22)}"/><polygon points="${A.star(0,120,22)}"/><polygon points="${A.star(120,120,22)}"/></g></svg>`;return 'url("data:image/svg+xml,'+encodeURIComponent(s)+'")'};
-A.crescent=(s,id)=>sv(s,s,`<defs><mask id="cm${id||0}"><rect width="100" height="100" fill="#fff"/><circle cx="66" cy="42" r="34" fill="#000"/></mask></defs><circle cx="46" cy="50" r="40" fill="url(#gGold)" mask="url(#cm${id||0})"/><polygon points="${A.star(74,52,12)}" fill="url(#gGold)"/>`,'0 0 100 100');
-A.lantern=w=>sv(w,w*2.4,`<line x1="50" y1="0" x2="50" y2="40" stroke="${GD}" stroke-width="3"/><path d="M30,62 L70,62 L62,44 L38,44Z" fill="url(#gGold)"/><circle cx="50" cy="38" r="7" fill="none" stroke="${GOLD}" stroke-width="3"/>
-<path d="M28,66 Q8,130 30,190 L70,190 Q92,130 72,66Z" fill="#f2b84b" fill-opacity=".85" stroke="${GOLD}" stroke-width="3"/><ellipse cx="50" cy="126" rx="14" ry="42" fill="#fff3c0" fill-opacity=".85"/>
-<path d="M30,190 L70,190 L62,208 L38,208Z" fill="url(#gGold)"/><circle cx="50" cy="217" r="6" fill="${GOLD}"/>`,'0 0 100 240');
-A.skyline=()=>{let b='';const dome=(x,r,h)=>`<path d="M${x-r},170 V${170-h} a${r},${r} 0 0 1 ${2*r},0 V170Z"/><rect x="${x-2}" y="${170-h-r-26}" width="4" height="26"/>`;
- const min=(x,h)=>`<rect x="${x-9}" y="${170-h}" width="18" height="${h}"/><rect x="${x-14}" y="${170-h+30}" width="28" height="8"/><path d="M${x-11},${170-h} L${x},${170-h-42} L${x+11},${170-h}Z"/>`;
- b+=`<rect x="0" y="140" width="1080" height="30"/>`+dome(180,70,40)+dome(300,40,50)+min(90,120)+min(400,150)+dome(540,95,50)+min(690,150)+dome(790,45,45)+dome(900,70,40)+min(1000,120)+`<rect x="440" y="110" width="200" height="40"/>`;
- return sv(1080,170,`<g fill="#031612" fill-opacity=".88">${b}</g>`)};
-A.minbar=()=>{let st='M40,700';for(let i=0;i<13;i++)st+=` h27.7 v-20`;
- let lat='';for(let i=-12;i<26;i++){lat+=`<line x1="${i*30}" y1="440" x2="${i*30+260}" y2="700"/><line x1="${i*30+260}" y1="440" x2="${i*30}" y2="700"/>`}
- let bal='';for(let x=70;x<400;x+=55){const y=700-.7222*(x-40);bal+=`<line x1="${x}" y1="${y-95}" x2="${x}" y2="${y-4}"/>`}
- return sv(700,760,`<ellipse cx="350" cy="715" rx="340" ry="22" fill="#000" fill-opacity=".35"/>
-<clipPath id="mbc"><polygon points="40,700 400,440 640,440 640,700"/></clipPath>
-<polygon points="40,700 400,440 640,440 640,700" fill="url(#gWood)" stroke="${GOLD}" stroke-width="4"/>
-<g clip-path="url(#mbc)" stroke="${GOLD}" stroke-opacity=".5" stroke-width="2">${lat}</g>
-<path d="${st}" fill="none" stroke="url(#gGold)" stroke-width="5"/>
-<g stroke="${GOLD}" stroke-width="4">${bal}</g><line x1="40" y1="605" x2="400" y2="345" stroke="url(#gGold)" stroke-width="12" stroke-linecap="round"/>
-<rect x="400" y="430" width="250" height="18" fill="url(#gGold)"/>
-<rect x="404" y="250" width="16" height="182" fill="url(#gGold)"/><rect x="630" y="250" width="16" height="182" fill="url(#gGold)"/>
-<rect x="420" y="300" width="210" height="130" rx="6" fill="#3a2108" stroke="${GOLD}" stroke-width="3"/>
-<text x="525" y="375" ${ARF} font-size="30" fill="${GL}" text-anchor="middle" direction="rtl">لَا إِلَهَ إِلَّا اللَّهُ</text>
-<text x="525" y="520" ${ARF} font-size="32" fill="${GL}" text-anchor="middle" direction="rtl">مُحَمَّدٌ رَسُولُ اللَّهِ</text>
-<path d="M488,700 V610 Q525,560 562,610 V700Z" fill="#241305" stroke="${GOLD}" stroke-width="3"/>
-<path d="M392,252 Q525,70 658,252Z" fill="url(#gGold)"/><rect x="388" y="248" width="274" height="12" rx="4" fill="${GD}"/>
-<text x="525" y="226" ${ARF} font-size="52" fill="#4a2c08" text-anchor="middle" direction="rtl">اللَّه</text>
-<line x1="525" y1="88" x2="525" y2="62" stroke="${GOLD}" stroke-width="4"/><circle cx="525" cy="50" r="13" fill="${GOLD}"/><circle cx="531" cy="47" r="11" fill="#04201b"/>`,'0 0 700 760')};
-A.dome=()=>sv(420,520,`<rect x="40" y="410" width="260" height="20" fill="url(#gGold)"/>
-<path d="M60,410 C60,270 120,200 170,200 C220,200 280,270 280,410Z" fill="url(#gGreen)" stroke="${GOLD}" stroke-width="4"/>
-<g stroke="#0a4a2a" stroke-opacity=".6" stroke-width="2">${[...Array(7)].map((_,i)=>`<path d="M${170+(i-3)*8},204 C${170+(i-3)*32},280 ${170+(i-3)*38},360 ${170+(i-3)*38},410" fill="none"/>`).join('')}</g>
-<line x1="170" y1="200" x2="170" y2="150" stroke="${GOLD}" stroke-width="5"/><circle cx="170" cy="140" r="10" fill="${GOLD}"/>
-<rect x="318" y="150" width="34" height="280" fill="#fff6dc" stroke="${GOLD}" stroke-width="3"/><rect x="310" y="210" width="50" height="10" fill="${GOLD}"/><rect x="310" y="290" width="50" height="10" fill="${GOLD}"/>
-<path d="M312,150 Q335,100 358,150Z" fill="url(#gGreen)"/><line x1="335" y1="100" x2="335" y2="70" stroke="${GOLD}" stroke-width="4"/>
-<rect x="20" y="430" width="360" height="22" rx="6" fill="#6b4b17"/>`,'0 0 400 520');
-A.book=()=>sv(520,360,`<path d="M260,300 Q150,262 30,290 L30,80 Q150,52 260,90Z" fill="url(#gPage)" stroke="${GOLD}" stroke-width="4"/><path d="M260,300 Q370,262 490,290 L490,80 Q370,52 260,90Z" fill="url(#gPage)" stroke="${GOLD}" stroke-width="4"/>
-<g stroke="${GD}" stroke-opacity=".6" stroke-width="3">${[0,1,2,3,4,5].map(i=>`<path d="M60,${120+i*28} Q150,${100+i*28} 235,${128+i*28}"/><path d="M285,${128+i*28} Q370,${100+i*28} 460,${120+i*28}"/>`).join('')}</g>
-<path d="M30,296 Q150,268 260,306 Q370,268 490,296 L490,318 Q370,290 260,328 Q150,290 30,318Z" fill="url(#gGold)"/><line x1="260" y1="90" x2="260" y2="306" stroke="${GD}" stroke-width="4"/>`);
-A.rug=(w,h)=>sv(w,h,`<rect x="6" y="6" width="288" height="408" rx="14" fill="url(#gRug)" stroke="${GOLD}" stroke-width="6"/><path d="M60,380 V200 Q60,70 150,48 Q240,70 240,200 V380Z" fill="none" stroke="${GOLD}" stroke-width="5"/><path d="M85,360 V205 Q85,100 150,82 Q215,100 215,205 V360Z" fill="none" stroke="${GL}" stroke-opacity=".6" stroke-width="3"/><polygon points="${A.star(150,250,34)}" fill="${GOLD}" fill-opacity=".8"/>${[...Array(12)].map((_,i)=>`<line x1="${20+i*23}" y1="414" x2="${20+i*23}" y2="436" stroke="${GOLD}" stroke-width="3"/><line x1="${20+i*23}" y1="6" x2="${20+i*23}" y2="-16" stroke="${GOLD}" stroke-width="3"/>`).join('')}`,'0 -20 300 460');
-A.box=()=>sv(300,300,`<polygon points="40,110 260,110 240,270 60,270" fill="url(#gWood)" stroke="${GOLD}" stroke-width="5"/><rect x="30" y="86" width="240" height="30" rx="6" fill="url(#gGold)"/><rect x="110" y="94" width="80" height="12" rx="6" fill="#241305"/><circle cx="150" cy="50" r="24" fill="url(#gGold)" stroke="${GD}" stroke-width="3"/><path d="M150,200 C100,170 110,140 135,150 C145,155 150,165 150,165 C150,165 155,155 165,150 C190,140 200,170 150,200Z" fill="${GL}"/>`);
-A.sleep=()=>sv(300,300,A.crescent(200,3).replace(/^<svg[^>]*>|<\/svg>$/g,'').replace('<defs>','<g transform="translate(20,40) scale(2)"><defs>')+'</g>'+`<text x="200" y="110" font-family="DejaVu Sans,FreeSerif,serif" font-size="70" fill="${GL}" font-style="italic">z</text><text x="236" y="70" font-family="DejaVu Sans,FreeSerif,serif" font-size="46" fill="${GL}" font-style="italic">z</text><text x="262" y="38" font-family="DejaVu Sans,FreeSerif,serif" font-size="32" fill="${GL}" font-style="italic">z</text>`);
-A.bulb=()=>sv(360,420,`<path d="M180,30 C90,30 40,100 60,180 C70,215 100,240 112,275 L248,275 C260,240 290,215 300,180 C320,100 270,30 180,30Z" fill="#ffe27a" stroke="${GOLD}" stroke-width="6"/><path d="M140,275 V200 L180,160 L220,200 V275" fill="none" stroke="${GD}" stroke-width="6"/><rect x="118" y="283" width="124" height="22" rx="8" fill="url(#gGold)"/><rect x="128" y="311" width="104" height="22" rx="8" fill="url(#gGold)"/><rect x="148" y="339" width="64" height="20" rx="8" fill="url(#gGold)"/>${[...Array(9)].map((_,i)=>{const a=(-160+i*18)*Math.PI/180;return `<line x1="${180+170*Math.cos(a)}" y1="${160+170*Math.sin(a)}" x2="${180+205*Math.cos(a)}" y2="${160+205*Math.sin(a)}" stroke="${GL}" stroke-width="6" stroke-linecap="round"/>`}).join('')}`);
-A.watch=()=>sv(420,480,`<rect x="180" y="10" width="60" height="40" rx="8" fill="url(#gGold)"/><rect x="195" y="40" width="30" height="40" fill="${GD}"/><circle cx="210" cy="270" r="180" fill="#04201b" stroke="url(#gGold)" stroke-width="14"/><circle cx="210" cy="270" r="150" class="arcbg" fill="none" stroke="${GOLD}" stroke-opacity=".25" stroke-width="12"/><circle class="arc" cx="210" cy="270" r="150" fill="none" stroke="${GL}" stroke-width="14" stroke-linecap="round" transform="rotate(-90 210 270)" stroke-dasharray="942.5" stroke-dashoffset="942.5"/><rect x="165" y="215" width="30" height="110" rx="8" fill="${GL}"/><rect x="225" y="215" width="30" height="110" rx="8" fill="${GL}"/>`);
-A.heart=()=>sv(400,380,`<path d="M200,350 C60,250 30,140 100,95 C155,62 200,100 200,135 C200,100 245,62 300,95 C370,140 340,250 200,350Z" fill="#c8453d" stroke="${GOLD}" stroke-width="7"/><path d="M110,130 C120,110 145,106 160,120" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="8" stroke-linecap="round"/>`);
-A.eye=()=>sv(300,200,`<path d="M15,100 Q150,-10 285,100 Q150,210 15,100Z" fill="#fff6dc" stroke="${GOLD}" stroke-width="7"/><circle cx="150" cy="100" r="46" fill="#1f8f6a"/><circle cx="150" cy="100" r="22" fill="#04201b"/><circle cx="162" cy="86" r="9" fill="#fff"/>`);
-A.coins=()=>sv(260,260,[0,1,2].map(i=>`<ellipse cx="${100+i*12}" cy="${200-i*34}" rx="80" ry="28" fill="url(#gGold)" stroke="${GD}" stroke-width="4"/><rect x="${20+i*12}" y="${186-i*34}" width="160" height="14" fill="${GD}"/>`).reverse().join('')+`<circle cx="190" cy="80" r="40" fill="url(#gGold)" stroke="${GD}" stroke-width="5"/><text x="190" y="96" font-family="DejaVu Sans,serif" font-size="48" font-weight="700" fill="${GD}" text-anchor="middle">$</text>`);
-A.ring=()=>sv(260,260,`<ellipse cx="130" cy="170" rx="80" ry="72" fill="none" stroke="url(#gGold)" stroke-width="16"/><polygon points="130,28 168,62 130,108 92,62" fill="#bfeaff" stroke="#fff" stroke-width="4"/><polygon points="92,62 168,62 130,70" fill="#fff" fill-opacity=".6"/>`);
-A.path=()=>sv(300,300,`<path d="M30,250 C90,250 80,120 150,140 C220,160 200,60 260,50" fill="none" stroke="${GOLD}" stroke-width="7" stroke-dasharray="3 18" stroke-linecap="round"/><polygon points="270,44 238,38 246,70" fill="${GOLD}"/><circle cx="30" cy="250" r="14" fill="${GL}"/>`);
-A.share=s=>sv(s,s,`<g stroke="${GL}" stroke-width="7"><line x1="28" y1="50" x2="72" y2="26"/><line x1="28" y1="50" x2="72" y2="74"/></g><g fill="${GOLD}"><circle cx="26" cy="50" r="14"/><circle cx="74" cy="24" r="14"/><circle cx="74" cy="76" r="14"/></g>`,'0 0 100 100');
-A.comment=s=>sv(s,s,`<path d="M16,20 H84 Q92,20 92,28 V62 Q92,70 84,70 H46 L28,88 V70 H16 Q8,70 8,62 V28 Q8,20 16,20Z" fill="${GOLD}"/><g fill="#04201b"><circle cx="32" cy="46" r="5"/><circle cx="50" cy="46" r="5"/><circle cx="68" cy="46" r="5"/></g>`,'0 0 100 100');
-A.heartS=s=>sv(s,s,`<path d="M50,86 C10,58 6,30 26,20 C40,13 50,24 50,32 C50,24 60,13 74,20 C94,30 90,58 50,86Z" fill="#e0564b"/>`,'0 0 100 100');
-A.sunrise=()=>sv(700,360,`<circle cx="350" cy="300" r="170" fill="url(#gSun)"/>${[...Array(11)].map((_,i)=>{const a=(-180+i*18)*Math.PI/180;return `<line x1="${350+200*Math.cos(a)}" y1="${300+200*Math.sin(a)}" x2="${350+270*Math.cos(a)}" y2="${300+270*Math.sin(a)}" stroke="${GL}" stroke-width="9" stroke-linecap="round"/>`}).join('')}<rect x="0" y="300" width="700" height="60" fill="#04201b"/><line x1="0" y1="300" x2="700" y2="300" stroke="${GOLD}" stroke-width="5"/>`);
-A.arr=()=>sv(70,30,`<line x1="2" y1="15" x2="52" y2="15" stroke="${GOLD}" stroke-width="6" stroke-linecap="round"/><polygon points="68,15 48,3 48,27" fill="${GOLD}"/>`);
-A.arr2=()=>sv(90,30,`<line x1="22" y1="15" x2="68" y2="15" stroke="${GOLD}" stroke-width="6"/><polygon points="2,15 24,3 24,27" fill="${GOLD}"/><polygon points="88,15 66,3 66,27" fill="${GOLD}"/>`);
-A.corner=()=>sv(70,70,`<path d="M4,66 V20 Q4,4 20,4 H66" fill="none" stroke="${GOLD}" stroke-width="6" stroke-linecap="round"/><polygon points="${A.star(26,26,10)}" fill="${GOLD}"/>`);
-A.divider=w=>sv(w,40,`<line x1="0" y1="20" x2="${w/2-34}" y2="20" stroke="${GOLD}" stroke-width="3"/><line x1="${w/2+34}" y1="20" x2="${w}" y2="20" stroke="${GOLD}" stroke-width="3"/><polygon points="${A.star(w/2,20,16)}" fill="${GOLD}"/>`);
-A.burst=s=>sv(s,s,`<g stroke="${GL}" stroke-width="6" stroke-linecap="round">${[...Array(24)].map((_,i)=>{const a=i*Math.PI/12;return `<line x1="${500+260*Math.cos(a)}" y1="${500+260*Math.sin(a)}" x2="${500+(i%2?400:470)*Math.cos(a)}" y2="${500+(i%2?400:470)*Math.sin(a)}"/>`}).join('')}</g><polygon points="${A.star(500,500,240)}" fill="${GOLD}" fill-opacity=".25" stroke="${GOLD}" stroke-width="5"/>`,'0 0 1000 1000');
-A.check=s=>sv(s,s,`<circle cx="50" cy="50" r="44" fill="none" stroke="${GOLD}" stroke-width="7"/><path d="M28,52 L44,68 L74,34" fill="none" stroke="${GL}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`,'0 0 100 100');
-A.bracket=w=>sv(w,50,`<path d="M4,6 V34 Q4,44 14,44 H${w-14} Q${w-4},44 ${w-4},34 V6" fill="none" stroke="${GOLD}" stroke-width="7" stroke-linecap="round"/>`);
-A.qmark=()=>sv(300,420,`<text x="150" y="340" font-family="DejaVu Sans,FreeSerif,serif" font-size="400" font-weight="700" text-anchor="middle" fill="url(#gGold)">?</text>`);
+// Inline SVG vector art library. All art is drawn in code; no external images.
+(function () {
+  const G = '#e3c26b', GL = '#f8e7ae', GD = '#a67c28', CR = '#fff6dc', E0 = '#04201b', E1 = '#0b3d33', E2 = '#145c4b';
+
+  // Shared gradient defs, injected once into the document.
+  const DEFS = `<svg width="0" height="0" style="position:absolute"><defs>
+    <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${GL}"/><stop offset=".5" stop-color="${G}"/><stop offset="1" stop-color="${GD}"/></linearGradient>
+    <linearGradient id="gGoldV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${GL}"/><stop offset="1" stop-color="${GD}"/></linearGradient>
+    <linearGradient id="gEm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${E2}"/><stop offset="1" stop-color="${E0}"/></linearGradient>
+    <linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fe0a0"/><stop offset=".5" stop-color="#22a35a"/><stop offset="1" stop-color="#0d6b38"/></linearGradient>
+    <radialGradient id="gGlow"><stop offset="0" stop-color="${GL}" stop-opacity=".9"/><stop offset=".4" stop-color="${G}" stop-opacity=".35"/><stop offset="1" stop-color="${G}" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gWhite"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".5" stop-color="${GL}" stop-opacity=".35"/><stop offset="1" stop-color="${GL}" stop-opacity="0"/></radialGradient>
+    <linearGradient id="gBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${GL}" stop-opacity=".85"/><stop offset="1" stop-color="${GL}" stop-opacity="0"/></linearGradient>
+    <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c66b"/><stop offset=".6" stop-color="#e38a4a"/><stop offset="1" stop-color="${E1}"/></linearGradient>
+  </defs></svg>`;
+
+  const wrap = (vb, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">${body}</svg>`;
+
+  function starPts(cx, cy, r1, r2, n) {
+    const p = [];
+    for (let i = 0; i < n * 2; i++) {
+      const a = Math.PI * i / n - Math.PI / 2, r = i % 2 ? r2 : r1;
+      p.push((cx + r * Math.cos(a)).toFixed(2) + ',' + (cy + r * Math.sin(a)).toFixed(2));
+    }
+    return p.join(' ');
+  }
+  // 8-point star (rub el hizb): two overlapping squares
+  function star8(cx, cy, r, fill, stroke, sw) {
+    const s = r / Math.SQRT2;
+    const sq = `<rect x="${cx - s}" y="${cy - s}" width="${2 * s}" height="${2 * s}" fill="${fill}" stroke="${stroke || 'none'}" stroke-width="${sw || 0}"/>`;
+    return `<g>${sq}<g transform="rotate(45 ${cx} ${cy})">${sq}</g></g>`;
+  }
+  const star8svg = (fill) => wrap('0 0 100 100', star8(50, 50, 46, fill || 'url(#gGold)'));
+
+  function medallion() {
+    let b = '';
+    for (let i = 0; i < 6; i++) {
+      const r = 440 - i * 70;
+      b += `<g transform="rotate(${i * 7.5} 450 450)">${star8(450, 450, r, 'none', G, 3)}</g>`;
+    }
+    b += `<circle cx="450" cy="450" r="445" fill="none" stroke="${G}" stroke-width="3"/>`;
+    b += `<polygon points="${starPts(450, 450, 120, 60, 16)}" fill="none" stroke="${GL}" stroke-width="3"/>`;
+    return wrap('0 0 900 900', b);
+  }
+
+  function patternTile() {
+    const s = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+      <g fill="none" stroke="${G}" stroke-width="2">${star8(90, 90, 60, 'none', G, 2)}${star8(0, 0, 30, 'none', G, 2)}${star8(180, 0, 30, 'none', G, 2)}${star8(0, 180, 30, 'none', G, 2)}${star8(180, 180, 30, 'none', G, 2)}
+      <path d="M90 0V30M90 150V180M0 90H30M150 90H180"/></g></svg>`;
+    return 'url("data:image/svg+xml;utf8,' + encodeURIComponent(s) + '")';
+  }
+
+  let maskN = 0;
+  function crescent(fill) {
+    const id = 'cm' + (maskN++);
+    return wrap('0 0 100 100', `<mask id="${id}"><rect width="100" height="100" fill="#fff"/><circle cx="62" cy="42" r="38" fill="#000"/></mask>
+      <circle cx="48" cy="50" r="42" fill="${fill || 'url(#gGold)'}" mask="url(#${id})"/>`);
+  }
+  function crescentStar() {
+    const id = 'cm' + (maskN++);
+    return wrap('0 0 100 100', `<mask id="${id}"><rect width="100" height="100" fill="#fff"/><circle cx="60" cy="44" r="36" fill="#000"/></mask>
+      <circle cx="44" cy="50" r="40" fill="url(#gGold)" mask="url(#${id})"/><polygon points="${starPts(72, 46, 14, 6, 5)}" fill="${GL}"/>`);
+  }
+
+  function lantern() {
+    return wrap('0 0 90 300', `
+      <line x1="45" y1="0" x2="45" y2="120" stroke="${GD}" stroke-width="2"/>
+      <path d="M30 120 L60 120 L52 108 L38 108Z" fill="url(#gGold)"/>
+      <circle cx="45" cy="185" r="60" fill="url(#gGlow)"/>
+      <path d="M22 132 L68 132 L78 180 L64 238 L26 238 L12 180Z" fill="rgba(248,231,174,.35)" stroke="url(#gGold)" stroke-width="4"/>
+      <path d="M45 132 V238 M12 180 H78 M28 135 L36 236 M62 135 L54 236" stroke="${G}" stroke-width="2" fill="none"/>
+      <ellipse cx="45" cy="185" rx="12" ry="18" fill="${GL}"/>
+      <path d="M26 238 L64 238 L56 254 L34 254Z" fill="url(#gGold)"/>
+      <path d="M45 254 V280" stroke="${G}" stroke-width="3"/><circle cx="45" cy="284" r="5" fill="${G}"/>`);
+  }
+
+  function dome(x, w, h, base) {
+    return `<path d="M${x} ${base} Q${x} ${base - h} ${x + w / 2} ${base - h * 1.15} Q${x + w} ${base - h} ${x + w} ${base}Z"/>
+      <rect x="${x + w / 2 - 2}" y="${base - h * 1.15 - 30}" width="4" height="30"/>`;
+  }
+  function minaret(x, w, h, base) {
+    return `<rect x="${x}" y="${base - h}" width="${w}" height="${h}"/><rect x="${x - 8}" y="${base - h * 0.7}" width="${w + 16}" height="10"/>
+      <path d="M${x} ${base - h} L${x + w / 2} ${base - h - 50} L${x + w} ${base - h}Z"/><rect x="${x + w / 2 - 2}" y="${base - h - 80}" width="4" height="30"/>`;
+  }
+  function skyline() {
+    let b = `<g fill="${E0}">`;
+    b += minaret(40, 34, 240, 330) + minaret(1006, 34, 240, 330);
+    b += dome(120, 200, 110, 260) + `<rect x="100" y="250" width="240" height="80"/>`;
+    b += dome(740, 200, 110, 260) + `<rect x="720" y="250" width="240" height="80"/>`;
+    b += dome(370, 340, 190, 220) + `<rect x="340" y="210" width="400" height="120"/>`;
+    b += minaret(300, 30, 270, 330) + minaret(750, 30, 270, 330);
+    b += `<rect x="0" y="300" width="1080" height="30"/></g>`;
+    b += `<path d="M0 300 H1080" stroke="${G}" stroke-width="2" opacity=".6"/>`;
+    return wrap('0 0 1080 330', b);
+  }
+
+  function minbar(arTop, arDoor) {
+    let lattice = '';
+    for (let i = 0; i < 9; i++) lattice += `<path d="M${130 + i * 32} 720 L${130 + i * 32} ${700 - i * 46}" stroke="${G}" stroke-width="2"/>`;
+    for (let i = 0; i < 6; i++) lattice += `<path d="M120 ${690 - i * 70} L${120 + 70 * (i + 1) * 0.68} 720" stroke="${G}" stroke-width="1.5" opacity=".7"/>`;
+    let steps = '';
+    for (let i = 0; i < 8; i++) steps += `<rect x="${110 + i * 40}" y="${720 - (i + 1) * 46}" width="44" height="12" fill="url(#gGold)"/>`;
+    let balust = '';
+    for (let i = 0; i < 9; i++) balust += `<line x1="${120 + i * 38}" y1="${690 - i * 44}" x2="${120 + i * 38}" y2="${620 - i * 44}" stroke="${GL}" stroke-width="4"/>`;
+    return wrap('0 0 620 800', `
+      <ellipse cx="380" cy="380" rx="280" ry="340" fill="url(#gGlow)" opacity=".8"/>
+      <rect x="60" y="720" width="520" height="40" rx="6" fill="url(#gGold)"/>
+      <polygon points="110,720 430,352 430,720" fill="url(#gEm)" stroke="url(#gGold)" stroke-width="6"/>
+      <g clip-path="none">${lattice}</g>${steps}
+      <path d="M120 620 L462 240" stroke="url(#gGold)" stroke-width="10" stroke-linecap="round"/>${balust}
+      <rect x="430" y="120" width="140" height="600" fill="url(#gEm)" stroke="url(#gGold)" stroke-width="6"/>
+      <rect x="430" y="340" width="140" height="18" fill="url(#gGold)"/>
+      <rect x="436" y="140" width="14" height="200" fill="${G}"/><rect x="550" y="140" width="14" height="200" fill="${G}"/>
+      <path d="M430 120 Q500 20 570 120Z" fill="url(#gGold)"/>
+      <rect x="497" y="0" width="6" height="40" fill="${G}"/>
+      <g transform="translate(476 -22) scale(.5)">${crescent().replace(/<\/?svg[^>]*>/g, '')}</g>
+      <text x="500" y="250" font-size="40" fill="${GL}" text-anchor="middle" font-family="Amiri,'Noto Naskh Arabic',serif" direction="rtl" transform="rotate(-90 500 250)">${arTop}</text>
+      <path d="M200 720 V610 Q240 560 280 610 V720Z" fill="${E0}" stroke="url(#gGold)" stroke-width="5"/>
+      <text x="240" y="600" font-size="22" fill="${GL}" text-anchor="middle" font-family="Amiri,'Noto Naskh Arabic',serif" direction="rtl">${arDoor}</text>
+      <text x="500" y="520" font-size="30" fill="${GL}" text-anchor="middle" font-family="Amiri,'Noto Naskh Arabic',serif" direction="rtl">اللَّه</text>
+      <text x="500" y="600" font-size="22" fill="${G}" text-anchor="middle" font-family="Amiri,'Noto Naskh Arabic',serif" direction="rtl">مُحَمَّدٌ رَسُولُ اللَّهِ</text>`);
+  }
+
+  function kaaba() {
+    return wrap('0 0 300 300', `<polygon points="40,90 170,60 270,90 270,260 170,290 40,260" fill="#111"/>
+      <polygon points="170,60 270,90 270,260 170,290" fill="#000"/>
+      <polygon points="40,120 170,92 270,120 270,140 170,112 40,140" fill="url(#gGold)"/>
+      <rect x="196" y="190" width="40" height="70" fill="url(#gGold)" opacity=".9"/>`);
+  }
+  function greenDome() {
+    let ribs = '';
+    for (let i = 0; i < 9; i++) ribs += `<path d="M${90 + i * 30} 300 Q${150 + (i - 4) * 18} 120 210 90" stroke="#0a5a2e" stroke-width="2" fill="none" opacity=".7"/>`;
+    return wrap('0 0 420 400', `<circle cx="210" cy="210" r="200" fill="url(#gGlow)"/>
+      <path d="M70 300 Q70 120 210 90 Q350 120 350 300Z" fill="url(#gGreen)"/>${ribs}
+      <rect x="60" y="300" width="300" height="60" fill="url(#gGreen)"/><rect x="60" y="300" width="300" height="8" fill="url(#gGold)"/>
+      <rect x="206" y="40" width="8" height="52" fill="url(#gGold)"/><circle cx="210" cy="36" r="9" fill="${G}"/>
+      <path d="M340 360 V140 H380 V360Z" fill="${CR}" stroke="${GD}" stroke-width="3"/><path d="M332 200 H388 M332 260 H388" stroke="#22a35a" stroke-width="8"/>
+      <path d="M340 140 L360 80 L380 140Z" fill="${CR}" stroke="${GD}" stroke-width="3"/>`);
+  }
+  function openBook() {
+    let lines = '';
+    for (let i = 0; i < 6; i++) lines += `<path d="M70 ${110 + i * 26} Q130 ${100 + i * 26} 190 ${110 + i * 26}M230 ${110 + i * 26} Q290 ${100 + i * 26} 350 ${110 + i * 26}" stroke="${GD}" stroke-width="3" fill="none" opacity=".6"/>`;
+    return wrap('0 0 420 300', `<ellipse cx="210" cy="140" rx="220" ry="150" fill="url(#gGlow)"/>
+      <path d="M20 80 Q110 50 210 80 Q310 50 400 80 V270 Q310 240 210 270 Q110 240 20 270Z" fill="url(#gGoldV)"/>
+      <path d="M40 70 Q120 40 205 70 V250 Q120 220 40 250Z" fill="${CR}"/><path d="M215 70 Q300 40 380 70 V250 Q300 220 215 250Z" fill="${CR}"/>${lines}`);
+  }
+  function bookCover(ar, num) {
+    return wrap('0 0 500 640', `<rect x="20" y="20" width="460" height="600" rx="24" fill="url(#gEm)" stroke="url(#gGold)" stroke-width="10"/>
+      <rect x="50" y="50" width="400" height="540" rx="14" fill="none" stroke="${G}" stroke-width="3"/>
+      <g transform="translate(180 90) scale(1.4)">${star8(50, 50, 46, 'none', G, 3).replace('', '')}</g>
+      <polygon points="${starPts(250, 160, 40, 20, 8)}" fill="url(#gGold)"/>
+      <text x="250" y="330" font-size="58" fill="${GL}" text-anchor="middle" font-family="Amiri,'Noto Naskh Arabic',serif" direction="rtl">${ar}</text>
+      <path d="M110 370 H390" stroke="${G}" stroke-width="3"/>
+      <text x="250" y="470" font-size="54" fill="${GL}" text-anchor="middle" font-family="Amiri,'Noto Naskh Arabic',serif" direction="rtl">${num}</text>
+      <rect x="20" y="20" width="40" height="600" fill="url(#gGold)" opacity=".5"/>`);
+  }
+  function rug(c1) {
+    return wrap('0 0 240 400', `<rect x="10" y="10" width="220" height="380" rx="10" fill="${c1 || '#7a1f2b'}" stroke="url(#gGold)" stroke-width="8"/>
+      <path d="M40 360 V150 Q40 60 120 40 Q200 60 200 150 V360Z" fill="none" stroke="${G}" stroke-width="5"/>
+      <path d="M70 360 V170 Q70 100 120 85 Q170 100 170 170 V360Z" fill="rgba(227,194,107,.18)"/>
+      <polygon points="${starPts(120, 140, 18, 8, 8)}" fill="${G}"/>
+      <path d="M10 10 v-0 M20 390 v14 M60 390 v14 M100 390 v14 M140 390 v14 M180 390 v14 M220 390 v14" stroke="${G}" stroke-width="3"/>`);
+  }
+  function charity() {
+    return wrap('0 0 200 200', `<rect x="30" y="70" width="140" height="110" rx="12" fill="url(#gGold)"/>
+      <rect x="70" y="80" width="60" height="10" rx="5" fill="${E0}"/><circle cx="100" cy="40" r="22" fill="${GL}" stroke="${GD}" stroke-width="4"/>
+      <path d="M60 130 Q100 160 140 130" stroke="${E0}" stroke-width="6" fill="none"/>`);
+  }
+  function moonZ() {
+    return wrap('0 0 200 200', `<g transform="translate(20 40) scale(1.3)">${crescent().replace(/<\/?svg[^>]*>/g, '')}</g>
+      <text x="130" y="70" font-size="40" fill="${GL}" font-family="DejaVu Sans,sans-serif" font-weight="700">z</text>
+      <text x="155" y="40" font-size="28" fill="${GL}" font-family="DejaVu Sans,sans-serif" font-weight="700">z</text>`);
+  }
+  function prayer() {
+    return wrap('0 0 200 200', `<path d="M40 180 V90 Q40 30 100 20 Q160 30 160 90 V180Z" fill="none" stroke="url(#gGold)" stroke-width="10"/>
+      <polygon points="${starPts(100, 80, 22, 10, 8)}" fill="${GL}"/>`);
+  }
+  function fasting() {
+    return wrap('0 0 200 200', `<g transform="translate(10 10) scale(1.2)">${crescent().replace(/<\/?svg[^>]*>/g, '')}</g>
+      <path d="M120 150 Q130 120 150 110 Q170 120 180 150Z" fill="url(#gGold)"/><rect x="120" y="150" width="60" height="12" fill="${GD}"/>`);
+  }
+  function bulb() {
+    return wrap('0 0 300 360', `<circle cx="150" cy="140" r="150" fill="url(#gWhite)"/>
+      <path d="M150 40 C80 40 60 120 90 160 C110 190 115 210 115 240 H185 C185 210 190 190 210 160 C240 120 220 40 150 40Z" fill="${GL}" stroke="${GD}" stroke-width="5"/>
+      <path d="M130 240 V180 L150 160 L170 180 V240" stroke="${GD}" stroke-width="4" fill="none"/>
+      <rect x="112" y="250" width="76" height="16" rx="6" fill="url(#gGold)"/><rect x="118" y="272" width="64" height="16" rx="6" fill="url(#gGold)"/>
+      <path d="M135 296 H165 L158 312 H142Z" fill="${GD}"/>`);
+  }
+  function stopwatch() {
+    return wrap('0 0 300 340', `<rect x="130" y="10" width="40" height="30" rx="6" fill="url(#gGold)"/>
+      <circle cx="150" cy="190" r="130" fill="url(#gEm)" stroke="url(#gGold)" stroke-width="10"/>
+      <circle cx="150" cy="190" r="108" fill="none" stroke="rgba(227,194,107,.2)" stroke-width="14"/>
+      <circle class="sw-ring" cx="150" cy="190" r="108" fill="none" stroke="${GL}" stroke-width="14" stroke-linecap="round" stroke-dasharray="678.6" stroke-dashoffset="0" transform="rotate(-90 150 190)"/>
+      <line class="sw-hand" x1="150" y1="190" x2="150" y2="105" stroke="${GL}" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="150" cy="190" r="10" fill="${G}"/>`);
+  }
+  function heart() {
+    return wrap('0 0 300 280', `<circle cx="150" cy="140" r="140" fill="url(#gGlow)"/>
+      <path d="M150 250 C40 170 20 120 40 80 C60 40 120 40 150 90 C180 40 240 40 260 80 C280 120 260 170 150 250Z" fill="url(#gGold)" stroke="${GL}" stroke-width="4"/>
+      <path d="M90 90 Q100 70 120 72" stroke="${CR}" stroke-width="8" stroke-linecap="round" fill="none" opacity=".7"/>`);
+  }
+  function eye() {
+    return wrap('0 0 300 180', `<path d="M10 90 Q150 -20 290 90 Q150 200 10 90Z" fill="${CR}" stroke="url(#gGold)" stroke-width="8"/>
+      <circle cx="150" cy="90" r="48" fill="${E1}"/><circle cx="150" cy="90" r="22" fill="${E0}"/><circle cx="135" cy="76" r="9" fill="#fff"/>`);
+  }
+  function coins() {
+    let b = '';
+    for (let i = 0; i < 4; i++) b += `<ellipse cx="100" cy="${160 - i * 24}" rx="70" ry="20" fill="url(#gGold)" stroke="${GD}" stroke-width="4"/>`;
+    b += `<circle cx="155" cy="60" r="38" fill="url(#gGold)" stroke="${GD}" stroke-width="4"/><circle cx="155" cy="60" r="24" fill="none" stroke="${GD}" stroke-width="3"/>`;
+    return wrap('0 0 200 200', b);
+  }
+  function ring() {
+    return wrap('0 0 200 200', `<circle cx="100" cy="125" r="58" fill="none" stroke="url(#gGold)" stroke-width="16"/>
+      <polygon points="100,20 128,48 100,76 72,48" fill="#cfe9ff" stroke="${GL}" stroke-width="4"/>`);
+  }
+  function share() {
+    return wrap('0 0 120 120', `<circle cx="90" cy="25" r="16" fill="${GL}"/><circle cx="30" cy="60" r="16" fill="${GL}"/><circle cx="90" cy="95" r="16" fill="${GL}"/>
+      <path d="M90 25 L30 60 L90 95" stroke="${GL}" stroke-width="8" fill="none"/>`);
+  }
+  function comment() {
+    return wrap('0 0 120 120', `<path d="M15 20 H105 V85 H50 L25 108 V85 H15Z" fill="${GL}"/>
+      <path d="M35 45 H85 M35 62 H70" stroke="${E0}" stroke-width="7" stroke-linecap="round"/>`);
+  }
+  function like() {
+    return wrap('0 0 120 120', `<path d="M60 105 C15 75 5 50 15 32 C25 14 50 14 60 36 C70 14 95 14 105 32 C115 50 105 75 60 105Z" fill="${GL}"/>`);
+  }
+  function sunrise() {
+    let rays = '';
+    for (let i = 0; i < 13; i++) {
+      const a = Math.PI + Math.PI * i / 12;
+      rays += `<line x1="${400 + 170 * Math.cos(a)}" y1="${330 + 170 * Math.sin(a)}" x2="${400 + 300 * Math.cos(a)}" y2="${330 + 300 * Math.sin(a)}" stroke="${GL}" stroke-width="8" stroke-linecap="round" opacity=".8"/>`;
+    }
+    return wrap('0 0 800 400', `<rect width="800" height="400" rx="40" fill="url(#gSky)" opacity=".55"/>${rays}
+      <circle cx="400" cy="330" r="150" fill="url(#gGold)"/><rect x="0" y="330" width="800" height="70" fill="${E0}"/>
+      <path d="M0 330 H800" stroke="${G}" stroke-width="4"/>`);
+  }
+  function question() {
+    return wrap('0 0 300 400', `<circle cx="150" cy="200" r="150" fill="url(#gGlow)"/>
+      <path d="M85 120 Q85 40 150 40 Q220 40 220 115 Q220 160 170 185 Q150 197 150 235 V255" stroke="url(#gGold)" stroke-width="40" fill="none" stroke-linecap="round"/>
+      <circle cx="150" cy="320" r="26" fill="url(#gGold)"/>`);
+  }
+  function corner() {
+    return wrap('0 0 100 100', `<path d="M6 94 V30 Q6 6 30 6 H94" stroke="url(#gGold)" stroke-width="6" fill="none"/>
+      <path d="M20 94 V40 Q20 20 40 20 H94" stroke="${G}" stroke-width="2" fill="none"/>${star8(22, 22, 9, G)}`);
+  }
+  function divider() {
+    return wrap('0 0 600 40', `<path d="M0 20 H260 M340 20 H600" stroke="url(#gGold)" stroke-width="3"/>${star8(300, 20, 16, 'url(#gGold)')}`);
+  }
+  function bracket() {
+    return wrap('0 0 800 100', `<path d="M10 10 Q10 50 60 50 H360 Q400 50 400 90 Q400 50 440 50 H740 Q790 50 790 10" stroke="url(#gGold)" stroke-width="8" fill="none" stroke-linecap="round"/>`);
+  }
+  function dotted(w) {
+    return wrap(`0 0 ${w} 40`, `<path d="M10 20 H${w - 10}" stroke="${GL}" stroke-width="8" stroke-dasharray="2 22" stroke-linecap="round"/>
+      <polygon points="${w - 6},20 ${w - 30},6 ${w - 30},34" fill="${G}"/>`);
+  }
+  function burst() {
+    let r = '';
+    for (let i = 0; i < 24; i++) {
+      const a = Math.PI * 2 * i / 24;
+      r += `<line x1="${300 + 90 * Math.cos(a)}" y1="${300 + 90 * Math.sin(a)}" x2="${300 + 290 * Math.cos(a)}" y2="${300 + 290 * Math.sin(a)}" stroke="${GL}" stroke-width="${i % 2 ? 4 : 8}" stroke-linecap="round" opacity=".8"/>`;
+    }
+    return wrap('0 0 600 600', `<circle cx="300" cy="300" r="300" fill="url(#gGlow)"/>${r}`);
+  }
+  function arcs() {
+    return wrap('0 0 300 300', [70, 120, 170].map(r => `<path d="M${150 - r * 0.6} ${150 - r * 0.8} A${r} ${r} 0 0 1 ${150 - r * 0.6} ${150 + r * 0.8}" transform="rotate(180 150 150)" stroke="${GL}" stroke-width="8" fill="none" stroke-linecap="round"/>`).join(''));
+  }
+  function halo() { return wrap('0 0 100 100', `<circle cx="50" cy="50" r="50" fill="url(#gWhite)"/>`); }
+  function lightBeam() { return wrap('0 0 200 600', `<polygon points="80,0 120,0 200,600 0,600" fill="url(#gBeam)"/>`); }
+
+  window.ART = { DEFS, star8svg, medallion, patternTile, crescent, crescentStar, lantern, skyline, minbar, kaaba, greenDome,
+    openBook, bookCover, rug, charity, moonZ, prayer, fasting, bulb, stopwatch, heart, eye, coins, ring, share, comment,
+    like, sunrise, question, corner, divider, bracket, dotted, burst, arcs, halo, lightBeam };
+})();
