@@ -3,23 +3,27 @@ on:
   workflow_dispatch:
     inputs:
       ratios:
-        description: "Ratios"
+        description: "Ratios to render, comma-separated (all: 9x16,16x9,1x1,4x5,3x4,4x3)"
         required: false
         default: "9x16,16x9,1x1,4x5,3x4,4x3"
       tiers:
-        description: "Qualities"
+        description: "Qualities, comma-separated (4k,fhd,hd)"
         required: false
         default: "4k,fhd,hd"
       test_seconds:
+        description: "Test only: render first N seconds; test runs are not released"
         required: false
         default: ""
       workers:
+        description: "Parallel browsers per ratio (empty = auto)"
         required: false
         default: ""
       release_tag:
+        description: "Release tag (empty = video-run number)"
         required: false
         default: ""
       release_title:
+        description: "Release title"
         required: false
         default: ""
 permissions:
@@ -31,44 +35,45 @@ jobs:
       matrix: ${{ steps.m.outputs.matrix }}
     steps:
       - id: m
+        env:
+          RATIOS: ${{ github.event.inputs.ratios }}
         run: |
-          RATIOS="${{ github.event.inputs.ratios }}"
-          RATIOS="${RATIOS:-9x16,16x9,1x1,4x5,3x4,4x3}"
-          JSON=$(echo "$RATIOS" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | jq -R -s -c 'split("\n") | map(select(length>0))')
-          echo "matrix=$JSON" >> $GITHUB_OUTPUT
+          CLEAN=$(echo "$RATIOS" | tr -d ' ')
+          for r in $(echo "$CLEAN" | tr ',' ' '); do case "$r" in 9x16|16x9|1x1|4x5|3x4|4x3) ;; *) echo "Unknown ratio: $r"; exit 1 ;; esac; done
+          JSON=$(echo "$CLEAN" | jq -R -c 'split(",") | map(select(length>0))')
+          echo "matrix=$JSON" >> "$GITHUB_OUTPUT"
   render:
     needs: plan
     runs-on: ubuntu-latest
+    timeout-minutes: 150
     strategy:
       fail-fast: false
       matrix:
         ratio: ${{ fromJson(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL || true; df -h /
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 22
       - name: Install FFmpeg and fonts
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-core fonts-hosny-amiri fonts-freefont-ttf fonts-dejavu-core && fc-cache -f
+      - name: Install dependencies
+        run: npm install && npx playwright install --with-deps chromium
+      - name: Render ratio
+        env:
+          RATIO: ${{ matrix.ratio }}
+          TIERS: ${{ github.event.inputs.tiers }}
+          TEST_SECONDS: ${{ github.event.inputs.test_seconds }}
+          WORKERS: ${{ github.event.inputs.workers }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-noto-core fonts-hosny-amiri fonts-freefont-ttf fonts-dejavu-core
-      - name: Install deps
-        run: |
-          npm install playwright
-          npx playwright install --with-deps chromium
-      - name: Render ratio ${{ matrix.ratio }}
-        run: |
-          TIERS="${{ github.event.inputs.tiers }}"
-          TIERS="${TIERS:-4k,fhd,hd}"
-          TEST="${{ github.event.inputs.test_seconds }}"
-          WORKERS="${{ github.event.inputs.workers }}"
-          ARGS="--ratios ${{ matrix.ratio }} --tiers $TIERS"
-          if [ -n "$TEST" ]; then ARGS="$ARGS --test $TEST"; fi
+          ARGS="--ratios $RATIO --tiers ${TIERS:-4k,fhd,hd}"
+          if [ -n "$TEST_SECONDS" ]; then ARGS="$ARGS --test $TEST_SECONDS"; fi
           if [ -n "$WORKERS" ]; then ARGS="$ARGS --workers $WORKERS"; fi
-          node index.html $ARGS
+          node render.js $ARGS
           ls -lh *.mp4
-      - name: Upload videos
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: video-${{ matrix.ratio }}
           path: "*.mp4"
@@ -87,25 +92,14 @@ jobs:
           pattern: video-*
           merge-multiple: true
           path: out
-      - name: Publish Release
+      - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG_INPUT: ${{ github.event.inputs.release_tag }}
           TITLE_INPUT: ${{ github.event.inputs.release_title }}
         run: |
           TAG="${TAG_INPUT:-video-${{ github.run_number }}}"
-          TITLE="${TITLE_INPUT:-Video in all ratios and qualities (run ${{ github.run_number }})}"
+          TITLE="${TITLE_INPUT:-Hadith Niyyah video formats (run ${{ github.run_number }})}"
           cd out
-          ls -lh
-          {
-            echo "Rendered by GitHub Actions run ${{ github.run_number }}."
-            echo
-            echo "| File | Size |"
-            echo "|---|---|"
-            for f in *.mp4; do echo "| $f | $(du -h "$f" | cut -f1) |"; done
-          } > ../notes.md
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$TAG" *.mp4 --clobber --repo "$GITHUB_REPOSITORY"
-          else
-            gh release create "$TAG" *.mp4 --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$TITLE" --notes-file ../notes.md
-          fi
+          { echo "Rendered by GitHub Actions run ${{ github.run_number }}."; echo; echo "| File | Size |"; echo "|---|---|"; for f in *.mp4; do echo "| $f | $(du -h "$f" | cut -f1) |"; done; echo; echo "9x16 = short-form vertical; 16x9 = YouTube landscape; 1x1/4x5/3x4 = feed; 4x3 = classic screens. 4k = archive, fhd = normal upload, hd = smaller files."; } > ../notes.md
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then gh release upload "$TAG" *.mp4 --clobber --repo "$GITHUB_REPOSITORY"; else gh release create "$TAG" *.mp4 --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$TITLE" --notes-file ../notes.md; fi
