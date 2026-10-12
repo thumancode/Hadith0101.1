@@ -1,10 +1,8 @@
-// Layout profiles in Full HD base coordinates (4K = same page at device scale 2, HD = downscaled).
-// wide=true -> scenes re-arrange horizontally; left=true -> brand bar left-aligned.
 const LAYOUTS={
-'9x16':{w:1080,h:1920,brandY:58,brandH:112,sy:215,sh:1200,subY:1445,subH:330,subW:960,fs:60,fl:52,barY:1850,m:60,wide:false},
-'4x5':{w:1080,h:1350,brandY:30,brandH:90,sy:135,sh:800,subY:960,subH:270,subW:960,fs:52,fl:46,barY:1290,m:50,wide:false},
-'3x4':{w:1080,h:1440,brandY:40,brandH:90,sy:150,sh:860,subY:1040,subH:280,subW:960,fs:56,fl:48,barY:1385,m:50,wide:false},
-'1x1':{w:1080,h:1080,brandY:24,brandH:76,sy:100,sh:700,subY:815,subH:190,subW:960,fs:46,fl:40,barY:1045,m:40,wide:false},
-'16x9':{w:1920,h:1080,brandY:28,brandH:80,sy:115,sh:725,subY:860,subH:160,subW:1680,fs:54,fl:46,barY:1056,m:80,wide:true,left:true},
-'4x3':{w:1440,h:1080,brandY:28,brandH:80,sy:115,sh:705,subY:840,subH:180,subW:1280,fs:52,fl:44,barY:1054,m:60,wide:true}
+ '9x16':{w:1080,h:1920,brand:{x:60,y:58,w:960,h:112},stage:{x:40,y:215,w:1000,h:1200},subtitle:{x:60,y:1445,w:960,h:330},progressY:1850,sub:60,long:52,safe:60},
+ '16x9':{w:1920,h:1080,brand:{x:80,y:28,w:1760,h:80},stage:{x:80,y:115,w:1760,h:725},subtitle:{x:120,y:860,w:1680,h:160},progressY:1056,sub:54,long:46,safe:80},
+ '1x1':{w:1080,h:1080,brand:{x:40,y:24,w:1000,h:76},stage:{x:35,y:100,w:1010,h:700},subtitle:{x:60,y:815,w:960,h:190},progressY:1045,sub:46,long:40,safe:40},
+ '4x5':{w:1080,h:1350,brand:{x:50,y:30,w:980,h:90},stage:{x:30,y:135,w:1020,h:800},subtitle:{x:60,y:960,w:960,h:270},progressY:1290,sub:52,long:46,safe:50},
+ '3x4':{w:1080,h:1440,brand:{x:50,y:40,w:980,h:90},stage:{x:30,y:150,w:1020,h:860},subtitle:{x:60,y:1040,w:960,h:280},progressY:1385,sub:56,long:48,safe:50},
+ '4x3':{w:1440,h:1080,brand:{x:60,y:28,w:1320,h:80},stage:{x:50,y:115,w:1340,h:705},subtitle:{x:80,y:840,w:1280,h:180},progressY:1054,sub:52,long:44,safe:60}
 };

@@ -1,1 +1,14 @@
-{"name":"hadith-video","version":"1.0.0","private":true,"scripts":{"render":"node render.js"},"dependencies":{"playwright":"^1.49.0"}}
+{
+  "name": "hadith-video-niyyah",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deterministic timestamped Bengali hadith video renderer",
+  "scripts": {
+    "render": "node render.js",
+    "test": "node render.js --test 3 --ratios 9x16 --tiers hd",
+    "still": "node render.js --still 1,20,40 --ratios 9x16"
+  },
+  "dependencies": {
+    "playwright": "^1.55.0"
+  }
+}

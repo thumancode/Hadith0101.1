@@ -1,0 +1,7 @@
+node_modules/
+*.mp4
+frames/
+*.jpg.tmp
+*.png
+!logo.png
+!google-play-badge.png
