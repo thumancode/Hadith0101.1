@@ -180,17 +180,17 @@ c=sc(74.8,78);
 add(c,'left:260px;top:60px',A.book().replace('width="520" height="360"','width="560" height="388"'),74.8,76.2,'pop',{i:.5,fn:(el,lt)=>`translateY(${sin(lt*2)*8}px)`});
 add(c,'left:490px;top:520px',A.check(100),75.2,76.2,'pop',{i:.4});
 add(c,'left:0;top:660px;width:1080px;font-size:92px','আজকের হাদিস',75.1,76.2,'rise',{cls:'lbl'});
-[[A.heartS(200),110,76.3],[A.comment(200),440,76.7],[A.share(200),770,77.1]].forEach(([svg,x,s],i)=>{
- add(c,`left:${x}px;top:260px;width:200px;height:200px;border-radius:50%;border:5px solid #e3c26b;background:rgba(4,32,27,.85);padding:26px;box-shadow:0 0 40px rgba(227,194,107,.45)`,svg,s,78,'pop',{i:.4,fn:(el,lt)=>`scale(${1+.05*sin(lt*7+i)})`})});
-add(c,'left:670px;top:490px;width:400px;font-size:68px','শেয়ার',77.2,78,'rise',{cls:'lbl'});
+[[A.heartS(130),135,76.3,'লাইক'],[A.comment(130),425,76.7,'কমেন্ট'],[A.share(130),715,77.1,'শেয়ার']].forEach(([svg,x,s,l],i)=>{
+ add(c,`left:${x}px;top:360px;width:230px;height:230px;border-radius:50%;border:5px solid #e3c26b;background:rgba(4,32,27,.85);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(227,194,107,.45)`,svg,s,78,'pop',{i:.4,fn:(el,lt)=>`scale(${1+.05*sin(lt*7+i)})`});
+ add(c,`left:${x-35}px;top:620px;width:300px;font-size:68px`,l,s+.1,78,'rise',{cls:'lbl'})});
 
 // ---------- scene 12: final call to action (78-82) ----------
 c=sc(78,D,true);
-[0,.8,1.6].forEach(d=>add(c,'left:200px;top:100px;width:680px;height:680px;border:4px solid #e3c26b;border-radius:50%','',78,D,'fade',{i:.05,o:.05,fn:(el,lt)=>`scale(${.7+((lt+d)%2.4)/2.4*.7})`,op:lt=>(1-((lt+d)%2.4)/2.4)*.8}));
-add(c,'left:180px;top:140px',ic(720),78,D,'pop',{i:.6,fn:(el,lt)=>`scale(${1+.025*sin(lt*5)})`});
-add(c,'left:40px;top:690px;width:1000px;font-size:64px;font-weight:700;line-height:1.35;color:#f8e7ae;text-align:center;text-shadow:0 0 30px rgba(227,194,107,.6)','ইসলামী বিশ্বকোষ ও আল হাদিস S2',78.4,D,'rise');
-add(c,'left:0;top:890px;width:1080px;display:flex;justify-content:center','<div class="chip" style="font-size:62px;background:#e3c26b;color:#04201b;border-color:#fff3c0">ইনষ্টল করুন</div>',78.8,D,'pop',{i:.4});
-add(c,'left:220px;top:1080px',badge(640),79.1,D,'pop',{i:.5,fn:(el,lt)=>`scale(${1+.03*sin(lt*5)})`});
+[0,.8,1.6].forEach(d=>add(c,'left:200px;top:72px;width:680px;height:680px;border:4px solid #e3c26b;border-radius:50%','',78,D,'fade',{i:.05,o:.05,fn:(el,lt)=>`scale(${.7+((lt+d)%2.4)/2.4*.7})`,op:lt=>(1-((lt+d)%2.4)/2.4)*.8}));
+add(c,'left:180px;top:120px',ic(720),78,D,'pop',{i:.6,fn:(el,lt)=>`scale(${1+.025*sin(lt*5)})`});
+add(c,'left:40px;top:770px;width:1000px;font-size:64px;font-weight:700;line-height:1.35;color:#f8e7ae;text-align:center;text-shadow:0 0 30px rgba(227,194,107,.6)','ইসলামী বিশ্বকোষ ও আল হাদিস S2',78.4,D,'rise');
+add(c,'left:0;top:930px;width:1080px;display:flex;justify-content:center','<div class="chip" style="font-size:62px;background:#e3c26b;color:#04201b;border-color:#fff3c0">ইনষ্টল করুন</div>',78.8,D,'pop',{i:.4});
+add(c,'left:220px;top:1110px',badge(640),79.1,D,'pop',{i:.5,fn:(el,lt)=>`scale(${1+.03*sin(lt*5)})`});
 
 // ---------- subtitles (always on) ----------
 const keys=['নিয়ত','নিয়্যাত','আল্লাহ','হাদিস','ইবাদত','শেয়ার','ইনষ্টল','ইনশাল্লাহ','বিশ্বকোষ','ইসলামী','আ্যপটি'];
