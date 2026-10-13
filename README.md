@@ -1,13 +1,17 @@
-# Hadith video — ইন্নামাল আ'মালু বিন নিয়্যাত
+# Hadith video — ইসলামী বিশ্বকোষ ও আল হাদিস S2
 
-Animated 1080×1920 / 30 fps video, built with HTML/CSS/JS, recorded by Playwright and encoded by FFmpeg on GitHub Actions.
+Timestamped audio → animated 1080×1920 (30 fps) vertical video. HTML/CSS/JS animation, recorded frame by frame with Playwright (Chromium), encoded with FFmpeg, rendered by GitHub Actions. Output: `hadith-video.mp4` (80 s).
 
-## Render
-1. Create a GitHub repository and upload all files. Keep `.github/workflows/render.yml` at that exact path.
-2. Actions tab → **Render hadith video** → **Run workflow** (optionally enter test seconds, e.g. `10`).
-3. Open the finished run and download the **hadith-video** artifact (contains `hadith-video.mp4`).
+## Render it (3 steps)
+1. Create a GitHub repository and upload **all files** in this folder. Keep the workflow at exactly `.github/workflows/render.yml`.
+2. Open the **Actions** tab → **Render hadith video** → **Run workflow**. (Optional: enter `10` in *test_seconds* to render only the first 10 seconds first.)
+3. When the run is green, open it and download the **hadith-video** artifact (a zip containing the MP4).
 
-## Edit later
-- Text / timing of subtitles: edit `timestamps.txt` (`start | end | text | emotion_tag`) and run the workflow again. `lines.js` is regenerated automatically.
-- Scene timing / visuals: `scenes.js` (each element has `track(el, start, end, {a, i, o})`).
-- Local: `npm install && npx playwright install chromium && node render.js --still 5,20,80`.
+## Change timing or text later
+Edit `timestamps.txt` (`start | end | text | emotion_tag`), commit, run the workflow again. `lines.js` is regenerated from it automatically. Scene timings (when each picture appears) are in `scenes.js`; they are written as absolute seconds, so if you change line timings, adjust the matching scene times too.
+
+## Local use (optional)
+`npm install && npx playwright install chromium && node render.js` — also `--test 10`, `--still 5,20` (PNG stills), `--workers 4`. Needs `ffmpeg`, and Bengali/Arabic fonts (Noto Serif/Sans Bengali, Amiri).
+
+## Files
+`index.html` `style.css` `art.js` (SVG art) `scenes.js` (timeline + scenes + `window.renderAt(t)`) `lines.js` `render.js` `package.json` `timestamps.txt` `audio.mp3` `app-icon.jpg` `google-play-badge.jpg` `.github/workflows/render.yml`

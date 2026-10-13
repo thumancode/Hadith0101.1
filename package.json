@@ -2,7 +2,7 @@
   "name": "hadith-video",
   "version": "1.0.0",
   "private": true,
-  "description": "Animated vertical hadith video rendered with Playwright + FFmpeg",
+  "description": "Timestamped audio to animated vertical hadith video (HTML/CSS/JS + Playwright + FFmpeg)",
   "scripts": { "render": "node render.js" },
   "dependencies": { "playwright": "^1.48.0" }
 }
